@@ -22,7 +22,7 @@ function infiniteLoop(arr,d,n){
 
 //https://www.codewars.com/kata/training-js-number-22-unlock-new-skills-arrow-function-spread-operator-and-deconstruction/train/javascript
 
-let shuffleIt = (arr,...shiftThis) => {
+const shuffleIt = (arr,...shiftThis) => {
       for (el of shiftThis) {
          [arr[el[0]], arr[el[1]]] = [arr[el[1]], arr[el[0]]];
       }
