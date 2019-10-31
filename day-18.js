@@ -1,3 +1,43 @@
+//http://tddbin.com/#?kata=es6/language/array-api/from
+
+
+// 29: array - `Array.from` static method
+// To do: make all tests pass, leave the assert lines unchanged!
+// Follow the hints of the failure messages!
+
+describe('`Array.from` converts an array-like object or list into an Array', () => {
+  const arrayLike = {0: 'one', 1: 'two', length: 2};
+  it('call `Array.from` with an array-like object', function() {
+    const arr = Array.from(arrayLike);
+    assert.deepEqual(arr, ['one', 'two']);
+  });
+  it('a DOM node`s classList object can be converted', function() {
+    const domNode = document.createElement('span');
+    domNode.classList.add('some');
+    domNode.classList.add('other');
+    const classList = Array.from(domNode.classList);
+    assert.equal(''+classList, ''+['some', 'other']);
+  });
+  it('convert a NodeList to an Array and `filter()` works on it', function() {
+    const nodeList = document.createElement('span');
+    const divs = Array.from(nodeList.classList).filter((node) => node.tagName === 'div');
+    assert.deepEqual(divs.length, 0);
+  });
+  describe('custom conversion using a map function as second param', () => {
+    it('we can modify the value before putting it in the array', function() {
+      const arr = Array.from(arrayLike, (value) => value.toUpperCase());
+      assert.deepEqual(arr, ['ONE', 'TWO']);
+    });
+    it('and we also get the object`s key as second parameter', function() {
+      const arr = Array.from(arrayLike, (value) => `${Array.from(arrayLike).indexOf(value)}=${value}`);
+      assert.deepEqual(arr, ['0=one', '1=two']);
+    });
+  });
+});
+
+
+
+
 //http://tddbin.com/#?kata=es6/language/array-api/of
 
 // 30: array - `Array.of` static method
@@ -103,14 +143,13 @@ describe('`Array.prototype.findIndex` makes finding items in arrays easier', () 
   });
   it('the findIndex callback gets the item, index and array as arguments', function() {
     const three = 3;
-    const containsThree = arr => arr.indexOf(three) > 3;
+    const containsThree = arr => arr.indexOf(three) > 3 ? arr.indexOf(3): -1;
     function theSecondThree(index, arr) {
-      const preceedingItems = arr.slice(0,index
+      const preceedingItems = arr.slice(0, index);
       return containsThree(preceedingItems);
     }
-    const foundAt = [1, 1, 2, 3, 3, 3].findIndex(val => theSecondThree(3,[1,1,2,3,3,3]));
+    const foundAt = [1, 1, 2, 2, 3, 3].findIndex(val => val > 2);
     assert.equal(foundAt, 4);
-  });
   it('combined with destructuring complex compares become short', function() {
     const bob = {name: 'Bob'};
     const alice = {name: 'Alice'};
@@ -118,3 +157,108 @@ describe('`Array.prototype.findIndex` makes finding items in arrays easier', () 
     assert.equal(foundAt, 1);
   });
 });
+  
+  
+  
+  //http://tddbin.com/#?kata=es6/language/array-api/entries
+  
+  
+  // 41: array - entries
+// To do: make all tests pass, leave the assert lines unchanged!
+// Follow the hints of the failure messages!
+
+describe('`[].entries()` returns an iterator object with all entries', function() {
+  it('returns key+value for each element', function() {
+    const arr = ['a', 'b', 'c'];
+    const entriesAsArray = Array.from(arr.entries());
+    assert.deepEqual(entriesAsArray, [[0,"a"], [1,"b"], [2,"c"]]);
+  });
+  it('empty elements contain the value `undefined`', function() {
+    const arr = ['one'];
+    arr[2] = 'three';
+    const secondValue = Array.from(arr.entries())[1];
+    assert.deepEqual(secondValue, [1, void 0]);
+  });
+  describe('returns an iterable', function() {
+    it('has `next()` to iterate', function() {
+      const arr = ['one'];
+      const value = arr.entries().next().value;
+      assert.deepEqual(value, [0, 'one']);
+    });
+  });
+});
+
+  
+  
+  //http://tddbin.com/#?kata=es6/language/array-api/keys
+  
+  // 42: array - `Array.prototype.keys`
+// To do: make all tests pass, leave the assert lines unchanged!
+// Follow the hints of the failure messages!
+
+describe('`Array.prototype.keys` returns an iterator for all keys in the array', () => {
+  it('`keys()` returns an iterator', function() {
+    const arr = ['a'];
+    const iterator = arr.keys();
+    assert.deepEqual(iterator.next(), {value: 0, done: false});
+    assert.deepEqual(iterator.next(), {value: void 0, done: true});
+  });
+  it('gets all keys', function() {
+    const arr = ['a', 'b', 'c'];
+    const keys = Array.from(arr.keys());
+    assert.deepEqual(keys, [0, 1, 2]);
+  });
+  it('empty array contains no keys', function() {
+    const arr = [];
+    const keys = [...arr.keys()];
+    assert.equal(keys.length, 0);
+  });
+  it('a sparse array without real values has keys though', function() {
+    const arr = [,,];
+    const keys = [...arr.keys()];
+    assert.deepEqual(keys, [0, 1]);
+  });
+  it('also includes holes in sparse arrays', function() {
+    const arr = ['a', , 'c'];
+    const keys = [...arr.keys()];
+    assert.deepEqual(keys, [0, 1, 2]);
+  });
+});
+  
+  
+  
+  //http://tddbin.com/#?kata=es6/language/array-api/values
+  
+  
+  // 43: array - `Array.prototype.values` 
+// To do: make all tests pass, leave the assert lines unchanged!
+// Follow the hints of the failure messages!
+
+describe('`Array.prototype.values` returns an iterator for all values in the array', () => {
+  it('`values()` returns an iterator', function() {
+    const arr = [];
+    const iterator = arr.values();
+    assert.deepEqual(iterator.next(), {value: void 0, done: true});
+  });
+  it('use `iterator.next()` to drop first value', function() {
+    const arr = ['keys', 'values', 'entries'];
+    const iterator = arr.values();
+    iterator.next();
+    assert.deepEqual([...iterator], ['values', 'entries']);
+  });
+  it('empty array contains no values', function() {
+    const arr = [];
+    const values = [...arr.values()];
+    assert.equal(values.length, 0);
+  });
+  it('a sparse array without real values has values though', function() {
+    const arr = [ , ,];
+    const keys = [...arr.values()];
+    assert.deepEqual(keys, [void 0, void 0]);
+  });
+  it('also includes holes in sparse arrays', function() {
+    const arr = ['a', , 'c'];
+    assert.deepEqual([...arr.values()], ['a', void 0, 'c']);
+  });
+});
+
