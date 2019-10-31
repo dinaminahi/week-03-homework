@@ -38,14 +38,14 @@ function blackAndWhite(arr){
 Array.prototype.reduce = function(process, initial) {
    let array = [...this];
    if(initial) {
-     for(let i of array) {
-       initial = process(initial,i);
+     for(let el of array) {
+       initial = process(initial,el);
      }
    } else{
      initial = array[0];
      array.shift(0);
-     for(let i of array) {
-       initial = process(initial,i);
+     for(let el of array) {
+       initial = process(initial,el);
      }
    }
    return initial;
